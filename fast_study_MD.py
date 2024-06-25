@@ -22,7 +22,11 @@ def func(x, m, c):
         return m * x + c
 
 # %%
-compare_file = '/eos/user/a/afornara/HT_DATA_2024_05_13_MD/LHC.BQHT.B1/LHC.BQHT.B1_20240513_184534.h5'
+B1 = True
+if B1:
+    compare_file = '/afs/cern.ch/work/a/afornara/public/HT_DATA_MD_20240513/LHC.BQHT.B1/LHC.BQHT.B1_20240513_184534.h5'
+else:
+    compare_file = '/afs/cern.ch/work/a/afornara/public/HT_DATA_MD_20240513/LHC.BQHT.B2/LHC.BQHT.B2_20240513_185022.h5'
 # sigmas, deltas, times are the original signals
 sigmas, deltas, times = unpack_HT_data(compare_file)
 # Decide which portion of the file to use: if the file starts with no beam start = 910

@@ -13,7 +13,7 @@ import nafflib
 ht = bqht.BQHT()
 from scipy.optimize import curve_fit
 from scipy.optimize import minimize
-
+import pandas as pd
 from MD_functions import *
 
 #Calibration factor from au to um
@@ -22,13 +22,65 @@ def func(x, m, c):
         return m * x + c
 
 # %%
-compare_file = '/eos/user/a/afornara/HT_DATA_2024_05_13_MD/LHC.BQHT.B1/LHC.BQHT.B1_20240513_185547.h5'
+# Decide which beam to study
+B1 = True
+if(B1):
+    slicings = [0, 2000, 2000, 6000]
+    compare_file = '/afs/cern.ch/work/a/afornara/public/HT_DATA_MD_20240513/LHC.BQHT.B1/LHC.BQHT.B1_20240513_185547.h5'
+    filestocompare = [
+        #+170, first set
+        '/afs/cern.ch/work/a/afornara/public/HT_DATA_MD_20240513/LHC.BQHT.B1/LHC.BQHT.B1_20240513_185552.h5',
+        '/afs/cern.ch/work/a/afornara/public/HT_DATA_MD_20240513/LHC.BQHT.B1/LHC.BQHT.B1_20240513_185621.h5',
+        # 0
+        # '/afs/cern.ch/work/a/afornara/public/HT_DATA_MD_20240513/LHC.BQHT.B1/LHC.BQHT.B1_20240513_185757.h5',
+        # '/afs/cern.ch/work/a/afornara/public/HT_DATA_MD_20240513/LHC.BQHT.B1/LHC.BQHT.B1_20240513_185810.h5',
+        # -170, first set
+        # '/afs/cern.ch/work/a/afornara/public/HT_DATA_MD_20240513/LHC.BQHT.B1/LHC.BQHT.B1_20240513_185903.h5',
+        # '/afs/cern.ch/work/a/afornara/public/HT_DATA_MD_20240513/LHC.BQHT.B1/LHC.BQHT.B1_20240513_185935.h5',
+        # +170, second set
+        # '/afs/cern.ch/work/a/afornara/public/HT_DATA_MD_20240513/LHC.BQHT.B1/LHC.BQHT.B1_20240513_190238.h5',
+        # '/afs/cern.ch/work/a/afornara/public/HT_DATA_MD_20240513/LHC.BQHT.B1/LHC.BQHT.B1_20240513_190312.h5',
+        # -170, second set
+        # '/afs/cern.ch/work/a/afornara/public/HT_DATA_MD_20240513/LHC.BQHT.B1/LHC.BQHT.B1_20240513_190532.h5',
+        # '/afs/cern.ch/work/a/afornara/public/HT_DATA_MD_20240513/LHC.BQHT.B1/LHC.BQHT.B1_20240513_190542.h5',
+        # +170, third set
+        # '/afs/cern.ch/work/a/afornara/public/HT_DATA_MD_20240513/LHC.BQHT.B1/LHC.BQHT.B1_20240513_190837.h5',
+        # '/afs/cern.ch/work/a/afornara/public/HT_DATA_MD_20240513/LHC.BQHT.B1/LHC.BQHT.B1_20240513_190843.h5',
+        # -170, third set
+        # '/afs/cern.ch/work/a/afornara/public/HT_DATA_MD_20240513/LHC.BQHT.B1/LHC.BQHT.B1_20240513_191250.h5',
+        # '/afs/cern.ch/work/a/afornara/public/HT_DATA_MD_20240513/LHC.BQHT.B1/LHC.BQHT.B1_20240513_191255.h5',
+        # Dump
+        # '/afs/cern.ch/work/a/afornara/public/HT_DATA_MD_20240513/LHC.BQHT.B1/LHC.BQHT.B1_20240513_191625.h5',
+        # '/afs/cern.ch/work/a/afornara/public/HT_DATA_MD_20240513/LHC.BQHT.B1/LHC.BQHT.B1_20240513_191633.h5'
+    ]
+else:
+    slicings = [0, 900, 2000, 6000]
+    compare_file = '/afs/cern.ch/work/a/afornara/public/HT_DATA_MD_20240513/LHC.BQHT.B2/LHC.BQHT.B2_20240513_185022.h5'
+    filestocompare = [
+        #+170, first set
+        '/afs/cern.ch/work/a/afornara/public/HT_DATA_MD_20240513/LHC.BQHT.B2/LHC.BQHT.B2_20240513_185552.h5',
+        '/afs/cern.ch/work/a/afornara/public/HT_DATA_MD_20240513/LHC.BQHT.B2/LHC.BQHT.B2_20240513_185621.h5',
+        # 0
+        # '/afs/cern.ch/work/a/afornara/public/HT_DATA_MD_20240513/LHC.BQHT.B2/LHC.BQHT.B2_20240513_185757.h5',
+        # '/afs/cern.ch/work/a/afornara/public/HT_DATA_MD_20240513/LHC.BQHT.B2/LHC.BQHT.B2_20240513_185810.h5',
+        # -170, first set
+        # '/afs/cern.ch/work/a/afornara/public/HT_DATA_MD_20240513/LHC.BQHT.B2/LHC.BQHT.B2_20240513_185903.h5',
+        # '/afs/cern.ch/work/a/afornara/public/HT_DATA_MD_20240513/LHC.BQHT.B2/LHC.BQHT.B2_20240513_185935.h5',
+        # +170, second set
+        # '/afs/cern.ch/work/a/afornara/public/HT_DATA_MD_20240513/LHC.BQHT.B2/LHC.BQHT.B2_20240513_190238.h5',
+        # '/afs/cern.ch/work/a/afornara/public/HT_DATA_MD_20240513/LHC.BQHT.B2/LHC.BQHT.B2_20240513_190312.h5',
+        # -170, second set
+        # '/afs/cern.ch/work/a/afornara/public/HT_DATA_MD_20240513/LHC.BQHT.B2/LHC.BQHT.B2_20240513_190532.h5',
+        # '/afs/cern.ch/work/a/afornara/public/HT_DATA_MD_20240513/LHC.BQHT.B2/LHC.BQHT.B2_20240513_190542.h5',
+        # +170, third set
+        # '/afs/cern.ch/work/a/afornara/public/HT_DATA_MD_20240513/LHC.BQHT.B2/LHC.BQHT.B2_20240513_190837.h5',
+        # '/afs/cern.ch/work/a/afornara/public/HT_DATA_MD_20240513/LHC.BQHT.B2/LHC.BQHT.B2_20240513_190843.h5',
+        # -170, third set
+        # '/afs/cern.ch/work/a/afornara/public/HT_DATA_MD_20240513/LHC.BQHT.B2/LHC.BQHT.B2_20240513_191250.h5',
+        # '/afs/cern.ch/work/a/afornara/public/HT_DATA_MD_20240513/LHC.BQHT.B2/LHC.BQHT.B2_20240513_191255.h5',
+    ]
 sigmas, deltas, times = unpack_HT_data(compare_file)
-filestocompare = [
-# # Stream at +170 
-'/eos/user/a/afornara/HT_DATA_2024_05_13_MD/LHC.BQHT.B1/LHC.BQHT.B1_20240513_185903.h5',
-'/eos/user/a/afornara/HT_DATA_2024_05_13_MD/LHC.BQHT.B1/LHC.BQHT.B1_20240513_185935.h5',
-]
+
 print('--------------------')
 for ii in range(0,len(filestocompare)):
     sigmas_temp, deltas_temp, times_temp = unpack_HT_data(filestocompare[ii])
@@ -58,7 +110,6 @@ end_at = len(sigmas)
 
 sigmas, deltas, times = sigmas[start_at:end_at], deltas[start_at:end_at], times[start_at:end_at]
 # Perform the average on the signals before and after the collision and calculate the standard deviation
-slicings = [0, 900, 2000, 6000]
 avg_sigma_0_signal = np.mean(sigmas[slicings[0]:slicings[1]], axis = 0)
 avg_delta_0_signal = np.mean(deltas[slicings[0]:slicings[1]], axis = 0)
 avg_sigma_1_signal = np.mean(sigmas[slicings[2]:slicings[3]], axis = 0)
@@ -104,7 +155,7 @@ peak = np.argmax(avg_sigma_0_signal)
 
 #Now only fit the points around the peak
 start = 5
-end = 4
+end = 5
 
 popt, pcov = curve_fit(func, avg_time_0_signal[peak-start:peak+end], diff_avg_normal_delta_signal[peak-start:peak+end], sigma = std_total_signal[peak-start:peak+end])
 ax[0].errorbar(avg_time_0_signal[peak-start:peak+end], diff_avg_normal_delta_signal[peak-start:peak+end], yerr = std_total_signal[peak-start:peak+end], fmt = 'o', color = 'black', label = 'Difference Signal')
@@ -121,7 +172,7 @@ ax[0].set_title('Real signals fit')
 
 # Same thing for the interpolated signals
 peak = np.argmax(avg_sigma_0)
-start = 5
+start = 3
 end = 4
 popt, pcov = curve_fit(func, avg_time_0[peak-start:peak+end], diff_avg_normal_delta[peak-start:peak+end], sigma = std_total[peak-start:peak+end])
 ax[1].errorbar(avg_time_0[peak-start:peak+end], diff_avg_normal_delta[peak-start:peak+end], yerr = std_total[peak-start:peak+end], fmt = 'o', color = 'black', label = 'Difference Signal')
