@@ -1,0 +1,16 @@
+ipython
+jupyterlab
+numpy
+pandas
+awkward
+matplotlib
+pyarrow
+pyyaml
+pytest
+cpymad
+ipynb-py-convert
+opencv-contrib-python
+nafflib
+ipykernel
+h5py
+scipy
